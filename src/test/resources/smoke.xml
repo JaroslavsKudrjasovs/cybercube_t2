@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
+<suite name="Sauce demo suite" parallel="tests" thread-count="1">
+
+    <listeners>
+        <listener class-name="org.testng.reporters.SuiteHTMLReporter"/>
+    </listeners>
+
+    <test name="Login">
+        <classes>
+            <class name="ee.cc.SauceDemoTest"/>
+        </classes>
+    </test>
+
+</suite>
