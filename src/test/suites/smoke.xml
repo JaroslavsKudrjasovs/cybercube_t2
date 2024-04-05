@@ -3,10 +3,10 @@
 <suite name="Sauce demo suite" parallel="tests" thread-count="1">
 
     <listeners>
-        <listener class-name="org.testng.reporters.SuiteHTMLReporter"/>
+        <listener class-name="org.uncommons.reportng.HTMLReporter"/>
     </listeners>
 
-    <test name="Login">
+    <test name="Login and do the shopping">
         <classes>
             <class name="ee.cc.SauceDemoTest"/>
         </classes>
