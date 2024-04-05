@@ -1,4 +1,4 @@
-**How to run the tests:**
+<h3>How to run the tests:</h3>
 
 **Create project in IntelliJ IDEA:**
 
@@ -12,15 +12,13 @@
 8. Choose 'Import project from external model', choose 'Maven' and click 'Finish'
 9. If offered choose 'New Window'
 10. Wait until Maven resolves dependencies (downloads all required libraries)
-<br/>
-<br/>
+
 **Run the tests:**
-<br/>
+
 1) Navigate to '.\src\test\suites\'
 2) Right click 'smoke.xml' and choose 'Run' (Ctrl+Shift+F10)
-<br/>
-<br/>
+
 **To view the results:**
-<br/>
+
 1. Navigate to '.\test-output\html'
 2. Right click 'index.html' and choose 'Open in->Browser->Chrome'
