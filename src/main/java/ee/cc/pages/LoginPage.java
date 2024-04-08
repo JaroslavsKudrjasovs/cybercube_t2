@@ -21,18 +21,43 @@ public class LoginPage {
     private final WebElement loginButton = $("input#login-button");
     private final SelenideElement loginContainer = $("div.login_container");
 
-    public LoginPage() {
+    public enum User {
+        STANDARD("standard_user", "secret_sauce"),
+        LOCKED("locked_out_user", "secret_sauce"),
+        PROBLEM("problem_user", "secret_sauce"),
+        PERFORMANCE("performance_glitch_user", "secret_sauce"),
+        ERROR("error_user", "secret_sauce"),
+        VISUAL("visual_user", "secret_sauce");
+
+        public String getUsername() {
+            return username;
+        }
+
+        public String getPassword() {
+            return password;
+        }
+
+        private String username, password;
+
+        User(String username, String password) {
+            this.username = username;
+            this.password = password;
+        }
+    }
+
+    public LoginPage(User user) {
         logger = LogManager.getLogger();
         if (System.getProperty("selenide.browser") == null)
             setupChrome();
         open("https://www.saucedemo.com/");
-        loginInputField.sendKeys("standard_user");
-        passwordInputField.sendKeys("secret_sauce");
+        loginInputField.sendKeys(user.getUsername());
+        passwordInputField.sendKeys(user.getPassword());
         loginButton.click();
-        logger.info("Login attempted");
+        logger.info("Login attempted with <" + user.getUsername() + ">");
     }
 
     // Workaround for chrome. By default, chrome starts with profile password manager that ruins test execution.
+    // To run the tests against other browser add -Dselenide.browser to JVM options, e.g. -Dselenide.browser=firefox
     private void setupChrome() {
 
         ChromeOptions options = new ChromeOptions();
@@ -42,7 +67,6 @@ public class LoginPage {
                 .create();
         WebDriverRunner.setWebDriver(driver);
     }
-
 
     public void verifyLoginPage(boolean exists) {
         logger.info("Check if we are" + (exists ? " " : " not ") + "on login page... ");

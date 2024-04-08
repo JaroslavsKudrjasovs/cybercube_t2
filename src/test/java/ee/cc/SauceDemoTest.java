@@ -4,6 +4,7 @@ import ee.cc.pages.*;
 import ee.cc.utils.CCMatcher;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 import static org.hamcrest.Matchers.equalTo;
@@ -12,13 +13,21 @@ public class SauceDemoTest {
     private final Logger logger = LogManager.getLogger();
 
     @Test
-    void loginTest() {
-        new LoginPage();
+    void loginStandardUserTest() {
+        new LoginPage(LoginPage.User.STANDARD);
         new InventoryPage();
     }
 
-    @Test(dependsOnMethods = "loginTest")
-    void addItemsToCartAndVerifyTotal() {
+    @DataProvider(name = "users")
+    Object[][] usersDataProvider() {
+        return new Object[][]{
+                {LoginPage.User.STANDARD},{LoginPage.User.VISUAL}
+        };
+    }
+
+    @Test(dependsOnMethods = "loginStandardUserTest", dataProvider = "users")
+    void addItemsToCartAndVerifyTotal(LoginPage.User user) {
+        new LoginPage(user);
         InventoryPage inventoryPage = new InventoryPage();
         double expectedTotal = inventoryPage
                 .addItemToCart(0).verifyShoppingCartBadge(1)
@@ -34,7 +43,7 @@ public class SauceDemoTest {
         checkoutCompletePage.clickBackToProductsButton();
     }
 
-    @Test(dependsOnMethods = "loginTest")
+    @Test(dependsOnMethods = "loginStandardUserTest")
     void addItemsFromDetailsToCartAndVerifyTotal() {
         double expectedTotal = 0.0;
         InventoryPage inventoryPage = new InventoryPage();
@@ -55,10 +64,18 @@ public class SauceDemoTest {
 
     @Test(priority = 100)
     void logoutTest() {
-        LoginPage loginPage = new LoginPage();
+        LoginPage loginPage = new LoginPage(LoginPage.User.STANDARD);
         InventoryPage inventoryPage = new InventoryPage();
         loginPage.verifyLoginPage(false);
         inventoryPage.clickBurgerMenuIcon().clickMenuItemByText(ParentPage.BurgerMenuItem.LOGOUT);
+        loginPage.verifyLoginPage(true);
+        InventoryPage.openInventoryPageByDirectUrl();
+        loginPage.verifyLoginPage(true);
+    }
+
+    @Test
+    void loginLockedUserTest() {
+        LoginPage loginPage = new LoginPage(LoginPage.User.LOCKED);
         loginPage.verifyLoginPage(true);
         InventoryPage.openInventoryPageByDirectUrl();
         loginPage.verifyLoginPage(true);
