@@ -1,10 +1,12 @@
 package ee.cc.pages;
 
+import org.apache.logging.log4j.LogManager;
+
 import static com.codeborne.selenide.Selenide.$;
 
 public class CheckoutOverviewPage extends ParentPage {
     public CheckoutOverviewPage() {
-        verifyTitle("Checkout: Overview");
+        verifyTitle(LogManager.getLogger(),"Checkout: Overview");
     }
 
     public double getSubtotal() {

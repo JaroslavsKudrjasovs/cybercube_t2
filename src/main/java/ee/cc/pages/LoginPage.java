@@ -1,5 +1,7 @@
 package ee.cc.pages;
 
+import com.codeborne.selenide.Condition;
+import com.codeborne.selenide.SelenideElement;
 import com.codeborne.selenide.WebDriverRunner;
 import io.github.bonigarcia.wdm.WebDriverManager;
 import org.apache.logging.log4j.LogManager;
@@ -17,6 +19,7 @@ public class LoginPage {
     private final WebElement loginInputField = $("input#user-name");
     private final WebElement passwordInputField = $("input#password");
     private final WebElement loginButton = $("input#login-button");
+    private final SelenideElement loginContainer = $("div.login_container");
 
     public LoginPage() {
         logger = LogManager.getLogger();
@@ -40,4 +43,9 @@ public class LoginPage {
         WebDriverRunner.setWebDriver(driver);
     }
 
+
+    public void verifyLoginPage(boolean exists) {
+        logger.info("Check if we are" + (exists ? " " : " not ") + "on login page... ");
+        loginContainer.should(exists ? Condition.exist : Condition.not(Condition.exist));
+    }
 }

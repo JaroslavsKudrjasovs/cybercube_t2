@@ -7,8 +7,7 @@ import org.apache.logging.log4j.Logger;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 
-import static com.codeborne.selenide.Selenide.$;
-import static com.codeborne.selenide.Selenide.$$;
+import static com.codeborne.selenide.Selenide.*;
 import static org.hamcrest.Matchers.equalTo;
 
 public class InventoryPage extends ParentPage {
@@ -16,8 +15,13 @@ public class InventoryPage extends ParentPage {
     private double total;
     private final Logger logger = LogManager.getLogger();
 
+    private static final String directLinkText = "https://www.saucedemo.com/inventory.html";
+
     public InventoryPage() {
-        verifyTitle("Products");
+        verifyTitle(logger, "Products");
+    }
+    public static void openInventoryPageByDirectUrl(){
+        open(directLinkText);
     }
 
     public InventoryPage addItemToCart(int itemIndex) {
@@ -26,6 +30,12 @@ public class InventoryPage extends ParentPage {
         total += Double.parseDouble(price.replaceAll("[^\\d.]", ""));
         collection.get(itemIndex).$("button").click();
         return this;
+    }
+
+    public ItemDescriptionPage gotoItemDescription(int itemIndex) {
+        ElementsCollection collection = $$(By.xpath("//div[@class='inventory_item']"));
+        collection.get(itemIndex).$("a").click();
+        return new ItemDescriptionPage();
     }
 
     public double getTotal() {

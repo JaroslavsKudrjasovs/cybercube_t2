@@ -13,13 +13,12 @@ public class SauceDemoTest {
 
     @Test
     void loginTest() {
-
         new LoginPage();
         new InventoryPage();
     }
 
     @Test(dependsOnMethods = "loginTest")
-    void addItemToCartAndVerifyTotal() {
+    void addItemsToCartAndVerifyTotal() {
         InventoryPage inventoryPage = new InventoryPage();
         double expectedTotal = inventoryPage
                 .addItemToCart(0).verifyShoppingCartBadge(1)
@@ -31,6 +30,37 @@ public class SauceDemoTest {
                 checkoutYourInformationPage.fillYourData("Tester", "Auto", "12345").clickContinueButton();
 
         CCMatcher.assertThat(logger, "Check the total", checkoutOverviewPage.getSubtotal(), equalTo(expectedTotal));
-        checkoutOverviewPage.clickFinishButton();
+        CheckoutCompletePage checkoutCompletePage = checkoutOverviewPage.clickFinishButton();
+        checkoutCompletePage.clickBackToProductsButton();
+    }
+
+    @Test(dependsOnMethods = "loginTest")
+    void addItemsFromDetailsToCartAndVerifyTotal() {
+        double expectedTotal = 0.0;
+        InventoryPage inventoryPage = new InventoryPage();
+        for (int i = 0; i < 2; i++) {
+            ItemDescriptionPage itemDescriptionPage = inventoryPage.gotoItemDescription(i);
+            expectedTotal += itemDescriptionPage.addItemToCart();
+            itemDescriptionPage.backToProducts();
+        }
+        ShoppingCartPage shoppingCartPage = inventoryPage.clickShoppingCartLink();
+        CheckoutYourInformationPage checkoutYourInformationPage = shoppingCartPage.clickCheckoutButton();
+        CheckoutOverviewPage checkoutOverviewPage =
+                checkoutYourInformationPage.fillYourData("Tester", "Auto", "12345").clickContinueButton();
+
+        CCMatcher.assertThat(logger, "Check the total", checkoutOverviewPage.getSubtotal(), equalTo(expectedTotal));
+        CheckoutCompletePage checkoutCompletePage = checkoutOverviewPage.clickFinishButton();
+        checkoutCompletePage.clickBackToProductsButton();
+    }
+
+    @Test(priority = 100)
+    void logoutTest() {
+        LoginPage loginPage = new LoginPage();
+        InventoryPage inventoryPage = new InventoryPage();
+        loginPage.verifyLoginPage(false);
+        inventoryPage.clickBurgerMenuIcon().clickMenuItemByText(ParentPage.BurgerMenuItem.LOGOUT);
+        loginPage.verifyLoginPage(true);
+        InventoryPage.openInventoryPageByDirectUrl();
+        loginPage.verifyLoginPage(true);
     }
 }

@@ -8,8 +8,10 @@ import org.testng.Reporter;
 public class CCMatcher {
     public static <T> void assertThat(Logger logger, String reason, T actual, Matcher<? super T> matcher) {
         MatcherAssert.assertThat(reason, actual, matcher);
-        String message = reason + " Successfully matched actual '" + actual + "' with expected " + matcher;
+        String message = "Successfully matched actual '" + actual + "' with expected " + matcher;
+        if (reason != null)
+            message = reason + ". " + message;
         logger.info(message);
-        Reporter.log(message);
+        Reporter.log(logger.getName() + " - " + message);
     }
 }
