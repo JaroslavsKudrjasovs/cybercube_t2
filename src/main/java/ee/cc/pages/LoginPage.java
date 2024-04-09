@@ -2,23 +2,17 @@ package ee.cc.pages;
 
 import com.codeborne.selenide.Condition;
 import com.codeborne.selenide.SelenideElement;
-import com.codeborne.selenide.WebDriverRunner;
-import io.github.bonigarcia.wdm.WebDriverManager;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.chrome.ChromeOptions;
 
 import static com.codeborne.selenide.Selenide.$;
 import static com.codeborne.selenide.Selenide.open;
 
-public class LoginPage {
-    private final Logger logger;
+@SuppressWarnings("unused")
+public class LoginPage extends ParentPage {
+    private final Logger logger = LogManager.getLogger();
 
-    private final WebElement loginInputField = $("input#user-name");
-    private final WebElement passwordInputField = $("input#password");
-    private final WebElement loginButton = $("input#login-button");
     private final SelenideElement loginContainer = $("div.login_container");
 
     public enum User {
@@ -37,7 +31,8 @@ public class LoginPage {
             return password;
         }
 
-        private String username, password;
+        private final String username;
+        private final String password;
 
         User(String username, String password) {
             this.username = username;
@@ -46,30 +41,32 @@ public class LoginPage {
     }
 
     public LoginPage(User user) {
-        logger = LogManager.getLogger();
-        if (System.getProperty("selenide.browser") == null)
-            setupChrome();
-        open("https://www.saucedemo.com/");
-        loginInputField.sendKeys(user.getUsername());
-        passwordInputField.sendKeys(user.getPassword());
-        loginButton.click();
-        logger.info("Login attempted with <" + user.getUsername() + ">");
+        this(user.getUsername(), user.getPassword());
     }
 
-    // Workaround for chrome. By default, chrome starts with profile password manager that ruins test execution.
-    // To run the tests against other browser add -Dselenide.browser to JVM options, e.g. -Dselenide.browser=firefox
-    private void setupChrome() {
-
-        ChromeOptions options = new ChromeOptions();
-        options.addArguments("--guest");
-        WebDriver driver = WebDriverManager.chromedriver()
-                .capabilities(options)
-                .create();
-        WebDriverRunner.setWebDriver(driver);
+    public LoginPage(String userName, String password) {
+        open("https://www.saucedemo.com/");
+        if (userName != null) {
+            WebElement loginInputField = $("input#user-name");
+            loginInputField.clear();
+            loginInputField.sendKeys(userName);
+        }
+        if (password != null) {
+            WebElement passwordInputField = $("input#password");
+            passwordInputField.clear();
+            passwordInputField.sendKeys(password);
+        }
+        logger.info("Attempting to login as <" + userName + ">");
+        WebElement loginButton = $("input#login-button");
+        loginButton.click();
     }
 
     public void verifyLoginPage(boolean exists) {
         logger.info("Check if we are" + (exists ? " " : " not ") + "on login page... ");
         loginContainer.should(exists ? Condition.exist : Condition.not(Condition.exist));
+    }
+
+    public String getErrorMessage() {
+        return $("h3[data-test='error']").getText();
     }
 }

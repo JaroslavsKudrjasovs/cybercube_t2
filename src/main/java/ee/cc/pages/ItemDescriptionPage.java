@@ -1,7 +1,6 @@
 package ee.cc.pages;
 
 import com.codeborne.selenide.SelenideElement;
-import org.apache.logging.log4j.LogManager;
 
 import static com.codeborne.selenide.Selenide.$;
 
@@ -19,7 +18,7 @@ public class ItemDescriptionPage extends ParentPage {
         return itemPrice;
     }
 
-    public void backToProducts(){
+    public void backToProducts() {
         $("button#back-to-products").click();
     }
 }
